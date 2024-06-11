@@ -181,7 +181,7 @@ public class Minesweeper extends JFrame {
         placeMines();
         resetTimer();
         resizeToFit();
-    }e
+    }
 
     public void resetGame() {
         getContentPane().removeAll();
