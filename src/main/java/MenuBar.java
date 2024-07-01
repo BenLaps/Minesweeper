@@ -15,7 +15,7 @@ public class MenuBar {
         JMenuItem newGameItem = new JMenuItem("New Game");
         newGameItem.addActionListener(e -> game.resetGame());
         JMenuItem settingsItem = new JMenuItem("Settings");
-        settingsItem.addActionListener(e -> openSettingsDialog());
+        settingsItem.addActionListener(e -> openCustumDialog());
         JMenuItem statisticItem = new JMenuItem("Statistic");
         statisticItem.addActionListener(e -> game.openStatistic());
         JMenuItem exitItem = new JMenuItem("Exit");
@@ -37,12 +37,16 @@ public class MenuBar {
         expertItem.addActionListener(e -> game.resetGame(30, 16, 99));
 
         JMenuItem customLevelItem = new JMenuItem("Custom Level");
-        customLevelItem.addActionListener(e -> openSettingsDialog());
+        customLevelItem.addActionListener(e -> openCustumDialog());
         levelMenu.add(beginnerItem);
         levelMenu.add(intermediateItem);
         levelMenu.add(expertItem);
         levelMenu.addSeparator();
         levelMenu.add(customLevelItem);
+
+        JMenuItem shop = new JMenuItem("Shop");
+        shop.addActionListener(e ->new Shop(game));
+
 
         JMenu helpMenu = new JMenu("Help");
         JMenuItem aboutItem = new JMenuItem("About");
@@ -55,6 +59,9 @@ public class MenuBar {
         menuBar.add(gameMenu);
         menuBar.add(levelMenu);
         menuBar.add(helpMenu);
+
+        menuBar.add(shop);
+
 
         game.setJMenuBar(menuBar);
     }
@@ -85,11 +92,11 @@ public class MenuBar {
                 JOptionPane.INFORMATION_MESSAGE);
     }
 
-    private void openSettingsDialog() {
-        JDialog settingsDialog = new JDialog(game, "Settings", true);
-        settingsDialog.setSize(300, 200);
+    private void openCustumDialog() {
+        JDialog settingsDialog = new JDialog(game, "Custum your level", true);
+        settingsDialog.setSize(400, 200);
         settingsDialog.setLayout(new GridLayout(5, 2));
-        JCheckBoxMenuItem hintsItem = new JCheckBoxMenuItem("Enable Hints");
+        JCheckBoxMenuItem hintsItem = new JCheckBoxMenuItem("Play custum minesweeper");
         hintsItem.setSelected(game.isHintsEnabled());
         hintsItem.addActionListener(e -> game.setHintsEnabled(hintsItem.isSelected()));
 

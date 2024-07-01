@@ -1,3 +1,6 @@
+import Configuration.ConfigManager;
+import Configuration.eConfigPart;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -28,6 +31,7 @@ public class Minesweeper extends JFrame {
     private boolean[][] mineField;
     private boolean[][] revealed;
     private int[][] flagged; // 0: not flagged, 1: flagged, 2: question mark
+    private int[][] bonus;
 
     private JLabel mineCountLabel;
     private JLabel timerLabel;
@@ -122,6 +126,7 @@ public class Minesweeper extends JFrame {
         mineField = new boolean[sizeX][sizeY];
         revealed = new boolean[sizeX][sizeY];
         flagged = new int[sizeX][sizeY];
+        bonus = new  int[sizeX][sizeY];
         hits = remainingHints;
 
         JPanel panel = new JPanel();
@@ -222,9 +227,20 @@ public class Minesweeper extends JFrame {
         while (placedMines < mines) {
             int x = rand.nextInt(sizeX);
             int y = rand.nextInt(sizeY);
-            if (!mineField[x][y]) {
+            if (!mineField[x][y] ) {
                 mineField[x][y] = true;
                 placedMines++;
+
+            }
+        }
+        for (int i = 0;i<mines;i++){
+            if (rand.nextInt ( 1000 )>=970){
+                int x =rand.nextInt(sizeX);
+                int y = rand.nextInt(sizeY);
+                if (!mineField[x][y]){
+                    bonus[x][y]=1;
+                    System.out.println ( x +" "+y );
+                }
             }
         }
         mineCountLabel.setText("Mines: " + (mines - countFlags));
@@ -234,18 +250,20 @@ public class Minesweeper extends JFrame {
         if (x < 0 || x >= sizeX || y < 0 || y >= sizeY || revealed[x][y] || flagged[x][y] == 1) {
             return;
         }
-
+        if(bonus[x][y]==1)
+            buttons[x][y].setText ( buttons[x][y].getText ()+"B" );
         revealed[x][y] = true;
         buttons[x][y].setEnabled(false);
 
         if (mineField[x][y]) {
-            buttons[x][y].setText("M");
+            buttons[x][y].setText(buttons[x][y].getText ()+"M");
             buttons[x][y].setBackground(Color.RED);
             gameOver();
         } else {
             int mineCount = countAdjacentMines(x, y);
             if (mineCount > 0) {
                 buttons[x][y].setText(String.valueOf(mineCount));
+
             } else {
                 for (int i = -1; i <= 1; i++) {
                     for (int j = -1; j <= 1; j++) {
@@ -254,6 +272,7 @@ public class Minesweeper extends JFrame {
                 }
             }
         }
+
     }
 
     private void flagCell(int x, int y) {
@@ -300,8 +319,11 @@ public class Minesweeper extends JFrame {
         }
         timer.stop();
         String playerName = JOptionPane.showInputDialog(this, "You Win!\nYour time: " + elapsedTime + "s\nEnter your name:");
+        ConfigManager.addByPart ( eConfigPart.gold,mines );
         if (playerName != null && !playerName.trim().isEmpty()) {
+
             StatisticsManager.saveStatistics(playerName, sizeX, sizeY, mines, elapsedTime);
+
         }
     }
 
@@ -310,11 +332,17 @@ public class Minesweeper extends JFrame {
         for (int i = 0; i < sizeX; i++) {
             for (int j = 0; j < sizeY; j++) {
                 if (mineField[i][j]) {
-                    buttons[i][j].setText("M");
+                    if (buttons[i][j].getText ()=="F")
+                        ConfigManager.addByPart ( eConfigPart.gold, 1 );
+                    buttons[i][j].setText(buttons[i][j].getText ()+"M");
+
                 }
+                if(bonus[i][j]==1)
+                    buttons[i][j].setText ( buttons[i][j].getText ()+"B" );
                 buttons[i][j].setEnabled(false);
             }
         }
+
         JOptionPane.showMessageDialog(this, "Game Over!");
         resetGame();
     }
